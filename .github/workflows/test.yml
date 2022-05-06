@@ -1,0 +1,11 @@
+on: [push]
+
+jobs:
+  test_job:
+    runs-on: ubuntu-latest
+    name: Test Import Action
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/import-from-git
+        with:
+          git-url: 'git@bitbucket.org:rubenbalcazar/sample-doc-source.git'

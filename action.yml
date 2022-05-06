@@ -1,0 +1,15 @@
+name: 'Import From Git'
+description: 'Import arbitrary content from Git repositories.'
+inputs:
+  git-url:  # The URL of the Git Repo.
+    description: 'The URL of the Git Repo.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: echo Checking out `${{ inputs.git-url }}.`
+      shell: bash
+    - run: git clone ${{ inputs.git-url}}
+      shell: bash
+    - run: ls -la
+      shell: bash
