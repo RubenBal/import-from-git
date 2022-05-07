@@ -9,3 +9,5 @@ jobs:
       - uses: RubenBal/import-from-git@v1
         with:
           git-url: 'https://RubenBalcazar@bitbucket.org/rubenbalcazar/sample-doc-source.git'
+          output-dir: 'imported-content'
+          input-dir: 'docs'

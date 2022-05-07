@@ -1,15 +1,48 @@
 name: 'Import From Git'
 description: 'Import arbitrary content from Git repositories.'
+
 inputs:
   git-url:  # The URL of the Git Repo.
     description: 'The URL of the Git Repo.'
     required: true
+  input-dir:
+    description: 'The directory in the GIT Repo to pull content from.'
+    required: false
+    default: ''
+  output-dir:
+    description: 'The directory the content should be imported to.'
+    required: false
+  clean-up:
+    description: 'Set to `true` to remove the imported repo after importing.'
+    required: false
+    default: 'true'
 runs:
   using: "composite"
   steps:
-    - run: echo Checking out `${{ inputs.git-url }}.`
+    - id: install-deps
+      run: ./src/install-dependencies.sh
       shell: bash
-    - run: git clone ${{ inputs.git-url}}
+    - id: verify-input-url
+      env:
+        INPUT_GIT_REPO_URL: ${{ inputs.git-url }}
+      run: ./src/verify-input-url.sh
       shell: bash
+    - id: clone-git-repo
+      run: ./src/clone-repo.sh
+      shell: bash
+      env: 
+        TARGET_GIT_REPO: ${{ steps.verify-input-url.outputs.target-url }}
+    - id: move-content
+      env:
+       TEMP_WORK_DIR: ${{ steps.clone-git-repo.outputs.temp-dir }}
+       SOURCE_REPO_ROOT: ${{ steps.clone-git-repo.outputs.repo-root }}
+       SOURCE_REPO_DIR: ${{ steps.clone-git-repo.outputs.repo-dir }}
+       TARGET_OUTPUT_DIR: ${{ inputs.output-dir }}
+       SOURCE_REPO_SUBDIR: ${{ inputs.input-dir }}
+       CLEAN_UP: ${{ inputs.clean-up }}
+      run: ./src/move-content.sh
+      shell: bash 
     - run: ls -la
+      shell: bash
+    - run: sudo ls -Ra ${{ inputs.output-dir }}
       shell: bash
