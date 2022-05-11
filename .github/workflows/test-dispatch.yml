@@ -1,0 +1,15 @@
+name: Test Action Dispatch
+on:
+  repository_dispatch:
+    types: [test_dispatch]
+jobs:
+  test-dispatch:
+    name: Test Dispatched Import Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: RubenBal/import-from-git@v1
+        with:
+          git-url: ${{ github.event.client_payload.git-url }}
+          output-dir: ${{ github.event.client_payload.output-dir }}
+          input-dir: ${{ github.event.client_payload.input-dir }}
