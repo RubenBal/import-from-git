@@ -1,3 +1,4 @@
+name: Test HTTP Action
 on: [push]
 
 jobs:

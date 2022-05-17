@@ -2,6 +2,6 @@
 
 echo "Installing Dependecies:"
 
-sudo apt -y install cpio
+sudo apt -q -y install cpio
 
 echo "Done."

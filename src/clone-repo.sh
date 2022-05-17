@@ -13,6 +13,13 @@ git clone "$TARGET_GIT_REPO"
 repo_root=$(echo */)
 repo_dir=$tmp_dir'/'$repo_root
 
+if [[ ! -z "$TARGET_BRANCH" ]];
+    then
+        echo "Checking out branch: '$TARGET_BRANCH'"
+        cd "$repo_root"
+        git checkout "$TARGET_BRANCH"
+fi
+
 echo "::set-output name=temp-dir::$(echo $tmp_dir)"
 echo "::set-output name=repo-root::$(echo $repo_root)"
 echo "::set-output name=repo-dir::$(echo $repo_dir)"

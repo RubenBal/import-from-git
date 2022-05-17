@@ -1,0 +1,16 @@
+name: Test SSH Usage
+on: [push]
+
+jobs:
+  test_job:
+    runs-on: ubuntu-latest
+    name: Test Import Action
+    steps:
+      - uses: actions/checkout@v3
+      - uses: RubenBal/import-from-git@v1
+        with:
+          git-url: 'git@bitbucket.org:rubenbalcazar/sample-doc-source.git'
+          output-dir: 'imported-content'
+          input-dir: 'docs'
+          ssh-key: ${{ secrets.SSH_REPO_TEST_KEY }}
+          ssh-known-hosts: ${{ secrets.SSH_REPO_TEST_KNOWN_HOSTS }}

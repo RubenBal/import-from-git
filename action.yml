@@ -5,6 +5,10 @@ inputs:
   git-url:  # The URL of the Git Repo.
     description: 'The URL of the Git Repo.'
     required: true
+  branch:
+    description: 'The branch to checkout.'
+    required: false
+    default: ''
   input-dir:
     description: 'The directory in the GIT Repo to pull content from.'
     required: false
@@ -16,12 +20,27 @@ inputs:
     description: 'Set to `true` to remove the imported repo after importing.'
     required: false
     default: 'true'
+  ssh-key:
+    description: 'SSH Key for SSH Git Access'
+    required: false
+    default: ''
+  ssh-known-hosts:
+    description: 'Known SSH Hosts'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
     - id: install-deps
       run: ./src/install-dependencies.sh
       shell: bash
+    - id: install-ssh-key
+      name: Install SSH Key
+      if: inputs.ssh-key != ''
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ inputs.ssh-key }}
+        known_hosts: ${{ inputs.ssh-known-hosts }}
     - id: verify-input-url
       env:
         INPUT_GIT_REPO_URL: ${{ inputs.git-url }}
@@ -32,6 +51,7 @@ runs:
       shell: bash
       env: 
         TARGET_GIT_REPO: ${{ steps.verify-input-url.outputs.target-url }}
+        TARGET_BRANCH: ${{ inputs.branch }}
     - id: move-content
       env:
        TEMP_WORK_DIR: ${{ steps.clone-git-repo.outputs.temp-dir }}
