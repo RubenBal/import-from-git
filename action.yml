@@ -31,8 +31,21 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Create Temp Action Dir
+      id: create-temp-dir
+      run: |
+        tmp_dir="import-action-space"
+        echo "::set-output name=temp-action-dir::$(echo $tmp_dir)"
+      shell: bash
+    - name: Checkout Action
+      id: checkout-action
+      uses: actions/checkout@v3
+      with:
+        repository: RubenBal/import-from-git
+        ref: v1
+        path: ${{steps.create-temp-dir.outputs.temp-action-dir }}
     - id: install-deps
-      run: ./src/install-dependencies.sh
+      run: ${{steps.create-temp-dir.outputs.temp-action-dir }}/src/install-dependencies.sh
       shell: bash
     - id: install-ssh-key
       name: Install SSH Key
@@ -41,13 +54,25 @@ runs:
       with:
         key: ${{ inputs.ssh-key }}
         known_hosts: ${{ inputs.ssh-known-hosts }}
+        if_key_exists: "ignore"
+    - name: Debug Runner Environment
+      id: debug-runner-evironment
+      run: |
+        nmap ultigit.ultimatesoftware.com -p 7999
+        nmap ultigit.ultimatesoftware.com -p 80
+        nmap ultigit.ultimatesoftware.com -p 22
+        nmap ultigit.ultimatesoftware.com -p 22
+        nmap github.com -p 22
+        nmap artifactory.ukg.int -p 80
+      shell: bash
     - id: verify-input-url
       env:
         INPUT_GIT_REPO_URL: ${{ inputs.git-url }}
-      run: ./src/verify-input-url.sh
+        TEMP_ACTION_DIRECTORY: ${{steps.create-temp-dir.outputs.temp-action-dir }}
+      run: ${{steps.create-temp-dir.outputs.temp-action-dir }}/src/verify-input-url.sh
       shell: bash
     - id: clone-git-repo
-      run: ./src/clone-repo.sh
+      run: ${{steps.create-temp-dir.outputs.temp-action-dir }}/src/clone-repo.sh
       shell: bash
       env: 
         TARGET_GIT_REPO: ${{ steps.verify-input-url.outputs.target-url }}
@@ -60,7 +85,7 @@ runs:
        TARGET_OUTPUT_DIR: ${{ inputs.output-dir }}
        SOURCE_REPO_SUBDIR: ${{ inputs.input-dir }}
        CLEAN_UP: ${{ inputs.clean-up }}
-      run: ./src/move-content.sh
+      run: ${{steps.create-temp-dir.outputs.temp-action-dir }}/src/move-content.sh
       shell: bash 
     - run: ls -la
       shell: bash

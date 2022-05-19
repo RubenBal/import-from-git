@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./utils/muna.sh
+source "$TEMP_ACTION_DIRECTORY/utils/muna.sh"
 
 url=$(printf "%s" "$INPUT_GIT_REPO_URL")
 unredirector 

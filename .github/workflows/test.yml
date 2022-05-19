@@ -6,7 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Import Action
     steps:
-      - uses: actions/checkout@v3
       - uses: RubenBal/import-from-git@v1
         with:
           git-url: 'https://RubenBalcazar@bitbucket.org/rubenbalcazar/sample-doc-source.git'
